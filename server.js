@@ -13,6 +13,7 @@ app.get('/', (req, res) => {
 
 // auth router
 import authRouter from './router/authRouter.js';
+import connectDB from './database/connectDB.js';
 app.use('/user', authRouter);
 
 // middleware
@@ -22,6 +23,11 @@ app.use(errorHandlers);
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
-  console.log(`server running on port ${PORT}`);
-});
+const start = () => {
+  connectDB(process.env.MONGO_URL);
+  app.listen(PORT, () => {
+    console.log(`server running on port ${PORT}`);
+  });
+};
+
+start();
