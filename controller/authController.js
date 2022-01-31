@@ -26,7 +26,28 @@ const register = async (req, res) => {
 };
 
 const login = async (req, res) => {
-  res.send('This is login route');
+  const { email, password } = req.body;
+
+  const existingUser = await User.findOne({ email });
+
+  if (!existingUser) {
+    throw new BadRequestError('User does not exist');
+  }
+
+  const checkPass = await existingUser.comparePassword(password);
+  if (!checkPass) {
+    throw new BadRequestError('The password does not match, please try again!');
+  }
+
+  const token = existingUser.createJWT();
+
+  res.status(StatusCodes.OK).json({
+    user: {
+      name: existingUser.name,
+      email: existingUser.email,
+    },
+    token,
+  });
 };
 const updateUser = async (req, res) => {
   res.send('This is update user route');
